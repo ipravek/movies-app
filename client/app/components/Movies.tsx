@@ -1,47 +1,49 @@
 "use client";
 import { Box, Container, Grid } from "@mui/material";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import CardComponent from "./CardComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMovieData, movieReqStatus, selectMovie } from "@/lib/redux";
+import Loader from "./Loader";
 
 export default function Movies() {
-  const [data, setData] = useState([]);
+  const dispatch = useDispatch();
+  const data = useSelector(selectMovie);
+  const status = useSelector(movieReqStatus);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const response = await axios.get(
-          process.env.NEXT_PUBLIC_API_URL + "movies"
-        );
-        setData(response.data.data);
-      } catch (err) {
-        console.log(err);
-      }
+    (() => {
+      dispatch(fetchMovieData());
     })();
   }, []);
 
   return (
     <Container>
-      <Box sx={{ mt: "5.5rem" }}>
-        <Grid
-          container
-          spacing={2}
-          sx={{ display: "flex", justifyContent: "center" }}
-        >
-          {data &&
-            data.map((e: any, idx) => {
-              return (
-                <Grid item key={idx} sx={{ display: "flex" }}>
-                  <CardComponent
-                    name={e.Title}
-                    body={e.Plot}
-                    image={e.Images[0]}
-                  />
-                </Grid>
-              );
-            })}
-        </Grid>
-      </Box>
+      {status == "loading" ? (
+        <Loader />
+      ) : (
+        <Box sx={{ mt: "5.5rem" }}>
+          <Grid
+            container
+            spacing={2}
+            sx={{ display: "flex", justifyContent: "center" }}
+          >
+            {data &&
+              data.map((e: any, idx: number) => {
+                return (
+                  <Grid item key={idx} sx={{ display: "flex" }}>
+                    <CardComponent
+                      name={e.Title}
+                      body={e.Plot}
+                      image={e.Images[0]}
+                      link={e.Title}
+                    />
+                  </Grid>
+                );
+              })}
+          </Grid>
+        </Box>
+      )}
     </Container>
   );
 }

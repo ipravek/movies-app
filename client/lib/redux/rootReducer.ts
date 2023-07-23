@@ -1,6 +1,5 @@
-/* Instruments */
-import { counterSlice } from './slices'
+import { movieDataSlice } from "./slices";
 
 export const reducer = {
-  counter: counterSlice.reducer,
-}
+  movie: movieDataSlice.reducer,
+};
